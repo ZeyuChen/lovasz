@@ -26,12 +26,12 @@ def lovasz_grad(gt_sorted):
     jaccard = fluid.layers.concat([jaccard[0:1, :], jaccard[1:, :] - jaccard[:-1, :]], axis=0)
     return jaccard
 
-def lovasz_hingle(logits, labels, per_image=True, ignore=None):
+def lovasz_hinge(logits, labels, per_image=True, ignore=None):
     if per_image:
         def treat_image(log, lab):
             log, lab = fluid.layers.unsqueeze(log, 0), fluid.layers.unsqueeze(lab, 0)
             log, lab = flatten_binary_scores(log, lab, ignore)
-            return lovasz_hingle_flat(log, lab)
+            return lovasz_hinge_flat(log, lab)
         losses = []
         i = fluid.layers.fill_constant(shape=[1], dtype='int32', value=0)
         loop_len = fluid.layers.shape(logits)[0]
@@ -49,10 +49,10 @@ def lovasz_hingle(logits, labels, per_image=True, ignore=None):
         losses_tensor = fluid.layers.stack(losses)
         loss = fluid.layers.reduce_mean(losses_tensor)   
     else:
-        loss = lovasz_hingle_flat(*flatten_binary_scores(logits, labels, ignore))
+        loss = lovasz_hinge_flat(*flatten_binary_scores(logits, labels, ignore))
     return loss
 
-def lovasz_hingle_flat(logits, labels):
+def lovasz_hinge_flat(logits, labels):
     shape = fluid.layers.shape(logits)
     y = fluid.layers.zeros_like(shape[0]) 
     
@@ -78,7 +78,7 @@ def lovasz_hingle_flat(logits, labels):
             fluid.layers.assign(input=loss, output=out_var)
     return out_var 
 
-def lovasz_hingle_flat_v2(logits, labels):
+def lovasz_hinge_flat_v2(logits, labels):
     def compute_loss():
         labelsf = fluid.layers.cast(labels, logits.dtype)
         signs = labelsf * 2 - 1

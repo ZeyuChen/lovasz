@@ -86,14 +86,14 @@ def test_lovasz_flatten_binary():
     print(out1, out1.shape)
     print(out2, out2.shape)
 
-def test_lovasz_hingle_all():
+def test_lovasz_hinge_all():
     probas_shape = [1, 2, 2] 
     labels_shape = [2, 2, 1]
     probas = fluid.layers.data(name='p', shape=probas_shape, dtype='float32')
     labels = fluid.layers.data(name='l', shape=labels_shape, dtype='int32')
     ignore = fluid.layers.data(name='m', shape=labels_shape, dtype='int32')
     vprobas, vlabels = flatten_binary_scores(probas, labels, ignore=ignore)
-    loss = lovasz_hingle_flat(vprobas, vlabels)
+    loss = lovasz_hinge_flat(vprobas, vlabels)
     place = fluid.CPUPlace()
     exe = fluid.Executor(place)
     test_program = fluid.default_main_program().clone(for_test=True)
@@ -120,13 +120,13 @@ def test_lovasz_hingle_all():
     print(vl)
     print(error)
 
-def test_lovasz_hingle_single():
+def test_lovasz_hinge_single():
     probas_shape = [1, 2, 2] 
     labels_shape = [2, 2, 1]
     probas = fluid.layers.data(name='p', shape=probas_shape, dtype='float32')
     labels = fluid.layers.data(name='l', shape=labels_shape, dtype='int32')
     ignore = fluid.layers.data(name='m', shape=labels_shape, dtype='int32')
-    lovasz_hingle(probas, labels, per_image=True, ignore=ignore)
+    lovasz_hinge(probas, labels, per_image=True, ignore=ignore)
 
     place = fluid.CPUPlace()
     exe = fluid.Executor(place)
@@ -255,14 +255,14 @@ def test_lovasz_softmax():
             feed={'p':probas_data, 'l':labels_data, 'm':ignore_data})
     print(loss)
 
-def test_lovasz_hingle_all_v2():
+def test_lovasz_hinge_all_v2():
     probas_shape = [1, 2, 2] 
     labels_shape = [2, 2, 1]
     probas = fluid.layers.data(name='p', shape=probas_shape, dtype='float32')
     labels = fluid.layers.data(name='l', shape=labels_shape, dtype='int32')
     ignore = fluid.layers.data(name='m', shape=labels_shape, dtype='int32')
     vprobas, vlabels = flatten_binary_scores(probas, labels, ignore=ignore)
-    loss = lovasz_hingle_flat_v2(vprobas, vlabels)
+    loss = lovasz_hinge_flat_v2(vprobas, vlabels)
     place = fluid.CPUPlace()
     exe = fluid.Executor(place)
     test_program = fluid.default_main_program().clone(for_test=True)
@@ -290,7 +290,7 @@ def test_lovasz_hingle_all_v2():
 
 if __name__ == '__main__':
     #test_lovasz_softmax()
-    #test_lovasz_hingle_all()
-    test_lovasz_hingle_all_v2()
-    #test_lovasz_hingle_single()
+    #test_lovasz_hinge_all()
+    test_lovasz_hinge_all_v2()
+    #test_lovasz_hinge_single()
     #test_single_lovasz_softmax_flat()
